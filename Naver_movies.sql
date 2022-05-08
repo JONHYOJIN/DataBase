@@ -2,7 +2,7 @@ create database naver_movie;
 use naver_movie;
 create table movie(
 	title varchar(30) primary key,
-    movie_rate varchar(10) not null,
+    movie_rate varchar(10),
     netizen_score float,
     netizen_count integer,
     journalist_score float,

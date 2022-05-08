@@ -30,59 +30,59 @@ class Naver_scrapping(webdriver.Chrome):
             try:
                 info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dt/a').text)
             except:
-                info.append('null')
+                info.append(None)
             #Movie Rate
             try:
                 info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dt/span').text)
             except:
-                info.append('null')
+                info.append(None)
             #Netizen Score
             try:
                 info.append(float(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[1]/div/a/span[2]').text))
             except:
-                info.append('null')
+                info.append(None)
             #Netizen Count
             try:
                 info.append(int(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[1]/div/a/span[3]/em').text))
             except:
-                info.append(0)
+                info.append(None)
             #Journalist Score
             try:
                 info.append(float(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[2]/div/a/span[2]').text))
             except:
-                info.append(0)
+                info.append(None)
             #Journalist Count
             try:
                 info.append(int(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[2]/div/a/span[3]/em').text))
             except:
-                info.append(0)
+                info.append(None)
             #Scope, Playing Time, Opening Date
             spo = self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[2]/dl/dd[1]').text.split('|')
             #Scope
             try:
                 info.append(re.sub(opt1, "", spo[0]))
             except:
-                info.append('null')
+                info.append(None)
             #Playing Time
             try:
                 info.append(re.sub(opt2, "", spo[1]))
             except:
-                info.append('null')
+                info.append(None)
             #Opening Date
             try:
                 info.append(re.sub(opt2, "", spo[2]).replace(".","-"))
             except:
-                info.append('null')
+                info.append(None)
             #Director
             try:
                 info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[2]/dl/dd[2]/span/a').text)
             except:
-                info.append('null')
+                info.append(None)
             #Image URL
             try:
                 info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/div/a/img').get_attribute('src'))
             except:
-                info.append('null')
+                info.append(None)
             infos.append(info)
             i+=1
             if(i>self.get_number_of_movies()):
