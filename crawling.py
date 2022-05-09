@@ -45,7 +45,7 @@ class Naver_scrapping(webdriver.Chrome):
             try:
                 info.append(int(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[1]/div/a/span[3]/em').text))
             except:
-                info.append(None)
+                info.append(0)
             #Journalist Score
             try:
                 info.append(float(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[2]/div/a/span[2]').text))
@@ -55,7 +55,7 @@ class Naver_scrapping(webdriver.Chrome):
             try:
                 info.append(int(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[2]/div/a/span[3]/em').text))
             except:
-                info.append(None)
+                info.append(0)
             #Scope, Playing Time, Opening Date
             spo = self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[2]/dl/dd[1]').text.split('|')
             #Scope

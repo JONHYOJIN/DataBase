@@ -2,12 +2,14 @@ import pymysql
 import re
 
 class SQL():
-    def __init__(self):
-        pass
+    def __init__(self, db, user, password):
+        self.db = db
+        self.user = user
+        self.password = password
     #Open cursor & connection
-    def open_db(self, db, user, password):
-        conn = pymysql.connect(host='localhost', user=user, 
-               password=password, db=db, unix_socket='/tmp/mysql.sock' )
+    def open_db(self):
+        conn = pymysql.connect(host='localhost', user=self.user, 
+               password=self.password, db=self.db, unix_socket='/tmp/mysql.sock' )
         cur = conn.cursor(pymysql.cursors.DictCursor)
         return conn, cur
     #Close cursor & connection
@@ -15,11 +17,11 @@ class SQL():
         cur.close()
         conn.close()
     #Read Table
-    def read_table(self, db, table, user, password, columns="title"):
+    def read_table(self, table, columns="title"):
         cols = columns.split(",")
         opt = "([ ])"
 
-        conn, cur = self.open_db(db, user, password)
+        conn, cur = self.open_db()
         sql = "select * from "+table
         cur.execute(sql)
         r = cur.fetchone()
@@ -31,9 +33,9 @@ class SQL():
             r = cur.fetchone()
         self.close_db(conn, cur)
     #Get Column names of Table
-    def get_table_columns(self, db, table, user, password):
+    def get_table_columns(self, table):
         columns = []
-        conn, cur = self.open_db(db, user, password)
+        conn, cur = self.open_db()
         sql = "select column_name from information_schema.columns where table_name='"+table+"';"
         cur.execute(sql)
         r = cur.fetchone()
@@ -43,13 +45,13 @@ class SQL():
         self.close_db(conn, cur)
         return columns
     #Input Data Function
-    def input_data(self, db, table, user, password, columns, data):
+    def input_data(self, table, columns, data):
         cols = columns.split(",")
         try:
             columns.remove("enter_date")
         except:
             pass
-        conn, cur = self.open_db(db, user, password)
+        conn, cur = self.open_db()
         sql1 = "insert into "+table+"("+columns
         sql2 = ") values("
         sql3 = ")"
@@ -75,7 +77,7 @@ class SQL():
         self.close_db(conn, cur)
     #Input Data Function for Movie Table
     def input_data_to_movie(self, data):
-        conn, cur = self.open_db("naver_movie", "naver", "naver")
+        conn, cur = self.open_db()
         sql = """
                 insert into movie(title, movie_rate, netizen_score, netizen_count, journalist_score, journalist_count, scope, playing_time, opening_date, director, image) 
                 values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -98,10 +100,7 @@ class SQL():
             
         self.close_db(conn, cur)
 if __name__ == '__main__':
-    SQL().read_table(db="naver_movie", 
-                    table="movie", 
-                    user="naver", 
-                    password="naver", 
-                    columns="title, movie_rate, netizen_score, netizen_count, \
-                            journalist_score, journalist_count, scope, playing_time, \
-                            opening_date, director, image")
+    SQL(db="naver_movie", user="naver", password="naver").read_table(table="movie", 
+                                                                    columns="title, movie_rate, netizen_score, netizen_count, \
+                                                                            journalist_score, journalist_count, scope, playing_time, \
+                                                                            opening_date, director, image")
