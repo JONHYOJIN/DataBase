@@ -17,7 +17,7 @@ class SQL():
         cur.close()
         conn.close()
     #Read Table
-    def read_table(self, table, columns="title"):
+    def read_table(self, table, columns):
         cols = columns.split(",")
         opt = "([ ])"
 
@@ -79,7 +79,7 @@ class SQL():
     def input_data_to_movie(self, data):
         conn, cur = self.open_db()
         sql = """
-                insert into movie(title, movie_rate, netizen_score, netizen_count, journalist_score, journalist_count, scope, playing_time, opening_date, director, image) 
+                insert into movie(title, movie_rate, netizen_rate, netizen_count, journalist_score, journalist_count, scope, playing_time, opening_date, director, image) 
                 values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         buffer = []

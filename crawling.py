@@ -24,40 +24,52 @@ class Naver_scrapping(webdriver.Chrome):
         opt2 = "([ㄱ-힣 ])"
         infos = []
         i=1
+        max = self.get_number_of_movies()
         while(1):
             info = []
             #Title
             try:
-                info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dt/a').text)
+                info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                    +']/dl/dt/a').text)
             except:
                 info.append(None)
             #Movie Rate
             try:
-                info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dt/span').text)
+                info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                    +']/dl/dt/span').text)
             except:
                 info.append(None)
-            #Netizen Score
+            #Netizen Rate
             try:
-                info.append(float(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[1]/div/a/span[2]').text))
+                rate=float(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                    +']/dl/dd[1]/dl/dd[1]/div/a/span[2]').text)
+                if rate>0:
+                    info.append(rate)
+                else:
+                    info.append(None)
             except:
                 info.append(None)
             #Netizen Count
             try:
-                info.append(int(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[1]/div/a/span[3]/em').text))
+                info.append(int(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                    +']/dl/dd[1]/dl/dd[1]/div/a/span[3]/em').text.replace(",","")))
             except:
                 info.append(0)
             #Journalist Score
             try:
-                info.append(float(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[2]/div/a/span[2]').text))
+                info.append(float(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                    +']/dl/dd[1]/dl/dd[2]/div/a/span[2]').text))
             except:
                 info.append(None)
             #Journalist Count
             try:
-                info.append(int(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[1]/dl/dd[2]/div/a/span[3]/em').text))
+                info.append(int(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                    +']/dl/dd[1]/dl/dd[2]/div/a/span[3]/em').text.replace(",","")))
             except:
                 info.append(0)
             #Scope, Playing Time, Opening Date
-            spo = self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[2]/dl/dd[1]').text.split('|')
+            spo = self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                +']/dl/dd[2]/dl/dd[1]').text.split('|')
             #Scope
             try:
                 info.append(re.sub(opt1, "", spo[0]))
@@ -75,17 +87,19 @@ class Naver_scrapping(webdriver.Chrome):
                 info.append(None)
             #Director
             try:
-                info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/dl/dd[2]/dl/dd[2]/span/a').text)
+                info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                    +']/dl/dd[2]/dl/dd[2]/span/a').text)
             except:
                 info.append(None)
             #Image URL
             try:
-                info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i)+']/div/a/img').get_attribute('src'))
+                info.append(self.find_element_by_xpath('//*[@id="content"]/div[1]/div[1]/div[3]/ul/li['+str(i) \
+                    +']/div/a/img').get_attribute('src'))
             except:
                 info.append(None)
             infos.append(info)
             i+=1
-            if(i>self.get_number_of_movies()):
+            if(i>max):
                 break
         return infos
 if __name__ == '__main__':

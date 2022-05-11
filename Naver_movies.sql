@@ -3,7 +3,7 @@ use naver_movie;
 create table movie(
 	title varchar(30) primary key,
     movie_rate varchar(10),
-    netizen_score float,
+    netizen_rate float,
     netizen_count integer,
     journalist_score float,
     journalist_count integer,
