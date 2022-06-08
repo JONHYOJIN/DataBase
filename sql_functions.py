@@ -32,6 +32,19 @@ class SQL():
             print("\n")
             r = cur.fetchone()
         self.close_db(conn, cur)
+    #Count Table
+    def read_table(self, table, columns):
+        cols = columns.split(",")
+        opt = "([ ])"
+
+        conn, cur = self.open_db()
+        sql = "select count(*) from "+table
+        cur.execute(sql)
+        r = cur.fetchone()
+
+        print(r)
+        
+        self.close_db(conn, cur)
     #Get Column names of Table
     def get_table_columns(self, table):
         columns = []
@@ -52,7 +65,7 @@ class SQL():
         except:
             pass
         conn, cur = self.open_db()
-        sql1 = "insert into "+table+"("+columns
+        sql1 = "insert ignore into "+table+"("+columns
         sql2 = ") values("
         sql3 = ")"
         for i in range(len(cols)):
