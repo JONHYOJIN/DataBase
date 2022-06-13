@@ -8,4 +8,5 @@ urlpatterns = [
     #base_views.py
     path('', base_views.index, name='index'),
     path('movie_code=<int:movie_code>/', base_views.detail, name='detail'),
+    path('review_code=<int:review_code>/', base_views.review, name='review'),
 ]

@@ -2,12 +2,37 @@
 {% load pybo_filter %}
 {% block content %}
 <div class="container my-3">
-    <div class="row my-3">
-        <div class="col-6">
+    <div class="row justify-content-between my-3">
+        <div class="col-2">
+            <select class="form-control so">
+                <option value="recent" {% if so == 'recent' %}selected{% endif %}>최신순</option>
+                <option value="audience_rate" {% if so == 'audience_rate' %}selected{% endif %}>관람객 평점순</option>
+                <option value="netizen_rate" {% if so == 'netizen_rate' %}selected{% endif %}>네티즌 평점순</option>
+                <option value="journalist_rate" {% if so == 'journalist_rate' %}selected{% endif %}>기자 평점순</option>
+                <option value="title" {% if so == 'title' %}selected{% endif %}>이름순</option>
+            </select>
+        </div>
+        <div class="col-3">
             <div class="input-group">
-                <input type="text" id="search_kw" class="form-control" value="{{ kw|default_if_none:'' }}">
+                <input type="text" id="search_kw" class="form-control kw" value="{{ kw|default_if_none:'' }}">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+                    <button class="btn btn-outline-secondary" type="button" id="btn_search1">영화 찾기</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="input-group">
+                <input type="text" id="search_akw" class="form-control akw" value="{{ akw|default_if_none:'' }}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_search2">배우 찾기</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="input-group">
+                <input type="text" id="search_dkw" class="form-control dkw" value="{{ dkw|default_if_none:'' }}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_search3">감독 찾기</button>
                 </div>
             </div>
         </div>
@@ -52,15 +77,15 @@
         <!-- 이전페이지 -->
         {% if movie_list.has_previous %}
         <li class="page-item">
-            <!-- <a class="page-link" href="?page={{ movie_list.previous_page_number }}">이전</a> -->
-            <a class="page-link" data-page="{{ movie_list.previous_page_number }}"
-           href="javascript:void(0)">이전</a>
+            <a class="page-link" href="?kw={{ kw }}&akw={{ akw }}&dkw={{ dkw }}&page={{ movie_list.previous_page_number }}&so={{ so }}">이전</a>
+            <!-- <a class="page-link" data-page="{{ movie_list.previous_page_number }}"
+           href="javascript:void(0)">이전</a> -->
         </li>
         {% else %}
         <li class="page-item disabled">
-            <!-- <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a> -->
-            <a class="page-link" tabindex="-1" aria-disabled="true"
-               href="javascript:void(0)">이전</a>
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+            <!-- <a class="page-link" tabindex="-1" aria-disabled="true"
+               href="javascript:void(0)">이전</a> -->
         </li>
         {% endif %}
         <!-- 페이지리스트 -->
@@ -68,15 +93,15 @@
         {% if page_number >= movie_list.number|add:-5 and page_number <= movie_list.number|add:5 %}
         {% if page_number == movie_list.number %}
         <li class="page-item active" aria-current="page">
-            <!-- <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a> -->
-            <a class="page-link" data-page="{{ page_number }}"
-           href="javascript:void(0)">{{ page_number }}</a>
+            <a class="page-link" href="?kw={{ kw }}&akw={{ akw }}&dkw={{ dkw }}&page={{ page_number }}&so={{ so }}">{{ page_number }}</a>
+            <!-- <a class="page-link" data-page="{{ page_number }}"
+           href="javascript:void(0)">{{ page_number }}</a> -->
         </li>
         {% else %}
         <li class="page-item">
-            <!-- <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a> -->
-            <a class="page-link" data-page="{{ page_number }}"
-           href="javascript:void(0)">{{ page_number }}</a>
+            <a class="page-link" href="?kw={{ kw }}&akw={{ akw }}&dkw={{ dkw }}&page={{ page_number }}&so={{ so }}">{{ page_number }}</a>
+            <!-- <a class="page-link" data-page="{{ page_number }}"
+           href="javascript:void(0)">{{ page_number }}</a> -->
         </li>
         {% endif %}
         {% endif %}
@@ -84,15 +109,15 @@
         <!-- 다음페이지 -->
         {% if movie_list.has_next %}
         <li class="page-item">
-            <!-- <a class="page-link" href="?page={{ movie_list.next_page_number }}">다음</a> -->
-            <a class="page-link" data-page="{{ movie_list.next_page_number }}"
-           href="javascript:void(0)">다음</a>
+            <a class="page-link" href="?kw={{ kw }}&akw={{ akw }}&dkw={{ dkw }}&page={{ movie_list.next_page_number }}&so={{ so }}">다음</a>
+            <!-- <a class="page-link" data-page="{{ movie_list.next_page_number }}"
+           href="javascript:void(0)">다음</a> -->
         </li>
         {% else %}
         <li class="page-item disabled">
-            <!-- <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a> -->
-            <a class="page-link" tabindex="-1" aria-disabled="true"
-            href="javascript:void(0)">다음</a>
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+            <!-- <a class="page-link" tabindex="-1" aria-disabled="true"
+            href="javascript:void(0)">다음</a> -->
         </li>
         {% endif %}
         
@@ -101,23 +126,46 @@
 </div>
 <form id="searchForm" method="get" action="{% url 'pybo:index' %}">
     <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+    <input type="hidden" id="akw" name="akw" value="{{ akw|default_if_none:'' }}">
+    <input type="hidden" id="dkw" name="dkw" value="{{ dkw|default_if_none:'' }}">
     <input type="hidden" id="page" name="page" value="{{ page }}">
+    <input type="hidden" id="so" name="so" value="{{ so }}">
 </form>
 {% endblock %}
 {% block script %}
 <script type='text/javascript'>
-const page_elements = document.getElementsByClassName("page-link");
-Array.from(page_elements).forEach(function(element) {
-    element.addEventListener('click', function() {
-        document.getElementById('page').value = this.dataset.page;
-        document.getElementById('searchForm').submit();
+$(document).ready(function(){
+    $(".page-link").on('click', function() {
+        $("#page").val($(this).data("page"));
+        $("#searchForm").submit();
     });
-});
-const btn_search = document.getElementById("btn_search");
-btn_search.addEventListener('click', function() {
-    document.getElementById('kw').value = document.getElementById('search_kw').value;
-    document.getElementById('page').value = 1;  // 검색버튼을 클릭할 경우 1페이지부터 조회한다.
-    document.getElementById('searchForm').submit();
+
+    $("#btn_search1").on('click', function() {
+        $("#kw").val($(".kw").val());
+        $("#page").val(1);  // 검색버튼을 클릭할 경우 1페이지부터 조회한다.
+        $("#searchForm").submit();
+    });
+
+    $("#btn_search2").on('click', function() {
+        $("#akw").val($(".akw").val());
+        $("#page").val(1);  // 검색버튼을 클릭할 경우 1페이지부터 조회한다.
+        $("#searchForm").submit();
+    });
+
+    $("#btn_search3").on('click', function() {
+        $("#dkw").val($(".dkw").val());
+        $("#page").val(1);  // 검색버튼을 클릭할 경우 1페이지부터 조회한다.
+        $("#searchForm").submit();
+    });
+
+    $(".so").on('change', function() {
+        $("#so").val($(this).val());
+        $("#page").val(1);
+        $("#searchForm").submit();
+    });
 });
 </script>
 {% endblock %}
+
+
+

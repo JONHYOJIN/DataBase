@@ -11,9 +11,15 @@
     {% endif %}
     <div class="card my-3">
         <div class="card-body">
+            {% if movie.opening_date %}
             <div class="card-text" style="white-space: pre-line;">개봉일 : {{ movie.opening_date }}</div>
+            {% endif %}
+            {% if movie.playing_time %}
             <div class="card-text" style="white-space: pre-line;">런타임 : {{ movie.playing_time }}분</div>
+            {% endif %}
+            {% if movie.domestic_rate or movie.foreign_rate %}
             <div class="card-text" style="display:inline;">등급 :</div>
+            {% endif %}
             {% if movie.domestic_rate %}
             <span> [국내] {{ movie.domestic_rate }} </span>
             {% endif %}
@@ -21,6 +27,9 @@
             <span> [해외] {{ movie.foreign_rate }}</span>
             {% endif %}
             <div style="white-space: pre-line;"> </div>
+            {% if movie.cumulative_audience %}
+            <div class="card-text" style="white-space: pre-line;">누적 관객 수 : {{ movie.cumulative_audience }}명</div>
+            {% endif %}
             {% if jenre %}
             <div class="card-text" style="display:inline;">장르 :</div>
             {% for jnr in jenre %}
@@ -34,6 +43,7 @@
             <span> {{ ctr.country }}</span>
             {% endfor %}
             {% endif %}
+            
             <div class="d-flex justify-content-end">
                 <div class="badge bg-light text-dark p-2">
                     세부사항
@@ -45,26 +55,30 @@
     <h5 class="border-bottom my-3 py-2">별점</h5>
     <div class="card my-3">
         <div class="card-body">
-            {% if movie.audience_rate %}
-            <div style="white-space: pre-line;"> </div>
-            <div class="card-text" style="display:inline;">관람객 : {{ movie.audience_rate }}점</div>
-            {% if movie.audience_count %}
-            <span> | {{ movie.audience_count }}명</span>
-            {% endif %}
-            {% endif %}
-            {% if movie.journalist_rate %}
-            <div style="white-space: pre-line;"> </div>
-            <div class="card-text" style="display:inline;">기자/평론가 : {{ movie.journalist_rate }}점</div>
-            {% if movie.journalist_count %}
-            <span> | {{ movie.journalist_count }}명</span>
-            {% endif %}
-            {% endif %}
-            {% if movie.netizen_rate %}
-            <div style="white-space: pre-line;"> </div>
-            <div class="card-text" style="display:inline;">네티즌 : {{ movie.netizen_rate }}점</div>
-            {% if movie.netizen_count %}
-            <span> | {{ movie.netizen_count }}명</span>
-            {% endif %}
+            {% if movie.audience_rate or movie.journalist_rate or movie.netizen_rate %}
+                {% if movie.audience_rate %}
+                <div style="white-space: pre-line;"> </div>
+                <div class="card-text" style="display:inline;">관람객 : {{ movie.audience_rate }}점</div>
+                {% if movie.audience_count %}
+                <span> | {{ movie.audience_count }}명</span>
+                {% endif %}
+                {% endif %}
+                {% if movie.journalist_rate %}
+                <div style="white-space: pre-line;"> </div>
+                <div class="card-text" style="display:inline;">기자/평론가 : {{ movie.journalist_rate }}점</div>
+                {% if movie.journalist_count %}
+                <span> | {{ movie.journalist_count }}명</span>
+                {% endif %}
+                {% endif %}
+                {% if movie.netizen_rate %}
+                <div style="white-space: pre-line;"> </div>
+                <div class="card-text" style="display:inline;">네티즌 : {{ movie.netizen_rate }}점</div>
+                {% if movie.netizen_count %}
+                <span> | {{ movie.netizen_count }}명</span>
+                {% endif %}
+                {% endif %}
+            {% else %}
+                <div class="card-text" style="white-space: pre-line;">등록된 별점이 없습니다.</div>
             {% endif %}
         </div>
     </div>
@@ -123,6 +137,62 @@
             {% endif %}
         </div>
     </div>
+    <!-- 비디오 -->
+    <h5 class="border-bottom my-3 py-2">비디오</h5>
+    <div class="card my-3">
+        <div class="card-body">
+            {% if video %}
+            <div class='vd'>
+                {% for vd in video %}
+                <div class="card-text" style="display:inline;">{{ vd.video_title}} |</div>
+                    <a href="{{ vd.video_url }}"> 영상 링크</a>
+                <div style="white-space: pre-line;"> 
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="card-text" style="white-space: pre-line;">등록된 비디오가 없습니다.</div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- 이미지 -->
+    <h5 class="border-bottom my-3 py-2">포토</h5>
+    {% if image %}
+    <div class='imgs'>
+        {% for img in image %}
+        <img src= {{img.image_url}}>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card-text" style="white-space: pre-line;">등록된 사진이 없습니다.</div>
+    {% endif %}
+    <!-- 리뷰 -->
+    <h5 class="border-bottom my-3 py-2">리뷰</h5>
+    <div class="card my-3">
+        <div class="card-body">
+            {% if movie_review %}
+            {% for mr in movie_review %}
+            <div class="card-text" style="display:inline;">{{ mr.review_code.review_id }} </div>
+            <span> | {{ mr.review_code.review_title }}</span>
+            <a href="{% url 'pybo:review' mr.review_code.review_code %}"> 리뷰보기</a>
+            {% if mr.review_code.review_date %}
+            <span> | {{ mr.review_code.review_date }}</span>
+            {% endif %}
+            <div style="white-space: pre-line;"> </div>
+            {% if mr.review_code.review_lookup %}
+            <span>조회 : {{ mr.review_code.review_lookup }}</span>
+            {% endif %}
+            {% if mr.review_code.review_recommend %}
+            <span> | 추천 : {{ mr.review_code.review_recommend }}</span>
+            {% endif %}
+            <div style="white-space: pre-line;"> 
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="card-text" style="white-space: pre-line;">등록된 리뷰가 없습니다.</div>
+            {% endif %}
+        </div>
+    </div>
     <!-- 평점 -->
     <h5 class="border-bottom my-3 py-2">평점</h5>
     <div class="card my-3">
@@ -150,7 +220,7 @@
             </div>
             {% endfor %}
             {% else %}
-            <div class="card-text" style="white-space: pre-line;">평점이 없습니다.</div>
+            <div class="card-text" style="white-space: pre-line;">등록된 평점이 없습니다.</div>
             {% endif %}
         </div>
     </div>

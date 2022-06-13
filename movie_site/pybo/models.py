@@ -175,6 +175,7 @@ class Movie(models.Model):
     audience_count = models.IntegerField(blank=True, null=True)
     journalist_count = models.IntegerField(blank=True, null=True)
     netizen_count = models.IntegerField(blank=True, null=True)
+    cumulative_audience = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False

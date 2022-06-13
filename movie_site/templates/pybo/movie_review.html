@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-3">
+    <!-- 제목 및 기본정보 -->
+    <h1 class="border-bottom py-2">{{ review.review_title }}</h1>
+    <div class="card my-3">
+        <div class="card-body">
+            <div class="card-text" style="display:inline;">작성자 : {{ review.review_id }}</div>
+            {% if review.review_lookup %}
+            <span> | [조회 수] {{ review.review_lookup }} </span>
+            {% endif %}
+            {% if review.review_recommend %}
+            <span> | [추천 수] {{ review.review_recommend }}</span>
+            {% endif %}
+            <div style="white-space: pre-line;"> </div>
+            <div class="card-text" style="white-space: pre-line;">작성일자 : {{ review.review_date }}</div>
+            <div class="d-flex justify-content-end">
+                <div class="badge bg-light text-dark p-2">
+                    세부사항
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 내용 -->
+    <div class="card my-3">
+        <div class="card-body">
+            {% if review.review_content %}
+            <div class="card-text" style="white-space: pre-line;">{{ review.review_content }}</div>
+            {% else %}
+            <div class="card-text" style="white-space: pre-line;">Text가 없습니다.</div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- 리뷰2 -->
+    <h5 class="border-bottom my-3 py-2">Comment</h5>
+    <div class="card my-3">
+        <div class="card-body">
+            {% if review2 %}
+            {% for r2 in review2 %}
+            <div class="card-text" style="display:inline;">{{ r2.review2_id }}</div>
+            {% if r2.review2_content %}
+            <span> | {{ r2.review2_content }} </span>
+            {% endif %}
+            <div style="white-space: pre-line;"> </div>
+            {% if r2.review2_date %}
+            <span>{{ r2.review2_date }} </span>
+            {% endif %}
+            {% if r2.review2_good %}
+            <span> | [GOOD] {{ r2.review2_good }} </span>
+            {% endif %}
+            {% if r2.review2_bad %}
+            <span> | [BAD] {{ r2.review2_bad }} </span>
+            {% endif %}
+            <div style="white-space: pre-line;"> 
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="card-text" style="white-space: pre-line;">등록된 Comment가 없습니다.</div>
+            {% endif %}
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

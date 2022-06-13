@@ -138,5 +138,13 @@ alter table point drop primary key;
 
 set sql_safe_updates=0;
 
+select * from review;
+select * from actor where actor_name='마동석';
+select * from actor;
+select * from director;
+select * from video;
+select * from image;
+select * from jenre;
+select * from nation;
 select * from movie;
-delete from point;
+-- update review set review_date ='2021-08-12' where review_code=478937;  

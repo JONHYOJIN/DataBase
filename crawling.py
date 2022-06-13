@@ -11,9 +11,9 @@ class Naver_scrapping(webdriver.Chrome):
         self.teardown = teardown
         options = webdriver.ChromeOptions()
         # options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('start-maximized')
+        # options.add_argument('--no-sandbox')
+        # options.add_argument('--disable-dev-shm-usage')
+        # options.add_argument('start-maximized')
         super(Naver_scrapping, self).__init__(options=options, executable_path=driver_path)
         self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
     #영화 연도 선택 페이지 이동 & 원하는 링크로 이동
@@ -21,7 +21,8 @@ class Naver_scrapping(webdriver.Chrome):
         self.get(link)
         self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
         if link==const.MOVIE_DIRECORY_URL:
-            self.find_element_by_class_name('tab_type_6').find_element_by_css_selector('#old_content > div.tab_type_6 > ul > li:nth-child(3) > a').click()
+            # self.find_element_by_class_name('tab_type_6').find_element_by_css_selector('#old_content > div.tab_type_6 > ul > li:nth-child(3) > a').click()
+            self.find_element_by_xpath('/html/body/div/div[4]/div/div/div/div/div[1]/div[1]/ul/li[3]/a/img').click()
             self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
     #해당 연도 영화 목록으로 이동
     def land_directory_of_year(self, year):
@@ -35,6 +36,8 @@ class Naver_scrapping(webdriver.Chrome):
     def land_next_page_review(self):
         self.find_element_by_xpath('//*[@id="pagerTagAnchor2"]/em').click()
         self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
+    def get_current_url(self):
+        return self.current_url
     #해당 연도의 각 영화 URL 수집 함수
     def get_movies_in_the_page(self):
         movie_urls = []
@@ -183,10 +186,15 @@ class Naver_scrapping(webdriver.Chrome):
         self.back()
 
         return movie
-    def get_movie_code(self):
-        return int(re.sub("([a-z])\w+[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]|(\/\/)", "", self.current_url))
+    
+    def get_movie_code(self, url):
+        # url = self.current_url
+        print("movie URL: ", url)
+        c_url = int(re.sub("([a-z])\w+[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]|(\/\/)", "", url))
+        print("movie CODE: ", c_url)
+        return c_url
     def get_review_code(self):
-        return int(re.sub("([a-z])\w+[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]|(\/\/)|#(\w+)", "", self.current_url).split("&")[0].replace("#", ""))
+        return int(re.sub("([a-z])\w+[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]|(\/\/)|#(\w+)", "", self.current_url.split("&")[0].replace("#", "")))
     def get_actor_table_info(self, movie_code):
         # actor : [actor_name, original_actor_name, actor_code]
         # movie_actor : [movie_code, cast, role, actor_code]
@@ -230,8 +238,8 @@ class Naver_scrapping(webdriver.Chrome):
                 atr.click()
                 self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
                 # actor_code
-                actor_one.append(self.get_movie_code())
-                movie_actor_one.append(self.get_movie_code())
+                actor_one.append(self.get_movie_code(self.current_url))
+                movie_actor_one.append(self.get_movie_code(self.current_url))
 
                 self.back()
                 self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
@@ -277,8 +285,8 @@ class Naver_scrapping(webdriver.Chrome):
 
                 d_name.click()
                 self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
-                director_one.append(self.get_movie_code())
-                movie_director_one.append(self.get_movie_code())
+                director_one.append(self.get_movie_code(self.current_url))
+                movie_director_one.append(self.get_movie_code(self.current_url))
                 self.back()
                 self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
                 
@@ -299,8 +307,8 @@ class Naver_scrapping(webdriver.Chrome):
                         director_one.append(d_o_name)
                     d_name.click()
                     self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
-                    director_one.append(self.get_movie_code())
-                    movie_director_one.append(self.get_movie_code())
+                    director_one.append(self.get_movie_code(self.current_url))
+                    movie_director_one.append(self.get_movie_code(self.current_url))
                     self.back()
                     self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
 
@@ -317,7 +325,7 @@ class Naver_scrapping(webdriver.Chrome):
         review2 = []
 
         try:
-            self.get(self.current_url.replace("detail", "review"))
+            self.get(self.current_url.replace("basic", "review"))
             self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
             num_review = int(self.find_element_by_xpath('/html/body/div/div[4]/div[3]/div[1]/div[4]/div/div/div/div/div[2]/span/em').text.replace(",",""))
             
@@ -329,7 +337,7 @@ class Naver_scrapping(webdriver.Chrome):
             
             # print("start")
             for page in range(1, num_page+1):
-                if page == 11:
+                if page == 2:
                     break
                 self.find_element_by_xpath('/html/body/div/div[4]/div[3]/div[1]/div[4]/div/div/div/div/div[3]/div/a['+str(page)+']/span').click()
                 self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
@@ -463,6 +471,7 @@ class Naver_scrapping(webdriver.Chrome):
         return review2
     def get_image_table_info(self, movie_code, url):
         #[movie_code, image_url]
+        self.get(self.current_url.replace("detail", "basic"))
         try:
             self.get(url)
             self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
@@ -583,10 +592,12 @@ class Naver_scrapping(webdriver.Chrome):
     #해당 연도 정보 취합
     def get_all_of_year(self, year, user):
 
+        self.land_page()
+
         self.land_directory_of_year(year)
         movie_urls_of_year = self.get_movies_in_the_page()
-        for url in movie_urls_of_year[299:]:
-
+        for url in movie_urls_of_year[194:]:
+            print(url)
             movie_table = []
             # actor_table = []
             # movie_actor_table = []
@@ -600,14 +611,52 @@ class Naver_scrapping(webdriver.Chrome):
             # jenre_table = []
             # nation_table = []
             # point_table = []
+            
+            # self.get(url)
+            try:
+                self.get(url)
+                self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
+            except:
+                pass
 
-            self.get(url)
-            self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
-            movie_code = self.get_movie_code()
 
-            movie_table.append(self.get_movie_table_info(movie_code, year))
+            print(">>land page success")
+            # self.switch_to.window(self.window_handles[-1]);
+            try:
+                movie_code = self.get_movie_code(url)
+            except:
+                self = Naver_scrapping()
+                self.land_page(url)
+                movie_code = self.get_movie_code(url)
+            print(">>movie code complete")
+
+            try:
+                movie_table.append(self.get_movie_table_info(movie_code, year))
+                user.input_data(table = "movie",
+                    columns="movie_code, title, original_title, opening_date, \
+                        playing_time, domestic_rate, foreign_rate, cumulative_audience, \
+                        subtitle, content, poster_url, audience_rate, journalist_rate, \
+                        netizen_rate, audience_count, journalist_count, netizen_count", 
+                    data=movie_table)
+                print(">>movie complete")
+            except:
+                print(">>movie failed ---")
             # #actor & movie_actor
-            actor, movie_actor = self.get_actor_table_info(movie_code)
+            try:
+                actor, movie_actor = self.get_actor_table_info(movie_code)
+                user.input_data(table = "actor",
+                        columns="actor_name, original_actor_name, actor_code", 
+                        data=actor)
+                print(">>actor complete")
+            except:
+                print(">>actor failed ---")
+            try:
+                user.input_data(table = "movie_actor",
+                        columns="movie_code, cast, role, actor_code", 
+                        data=movie_actor)
+                print(">>movie actor complete")
+            except:
+                print(">>movie actor failed ---")
             # if actor==None:
             #     pass
             # else:
@@ -617,7 +666,21 @@ class Naver_scrapping(webdriver.Chrome):
             # else:
             #     movie_actor_table.extend(movie_actor)
             # #director & movie_director
-            director, movie_director = self.get_director_table_info(movie_code)
+            try:
+                director, movie_director = self.get_director_table_info(movie_code)
+                user.input_data(table = "director",
+                        columns="director_name, original_director_name, director_code", 
+                        data=director)
+                print(">>director complete")
+            except:
+                print(">>director failed ---")
+            try:
+                user.input_data(table = "movie_director",
+                        columns="movie_code, director_code", 
+                        data=movie_director)
+                print(">>movie director complete")
+            except:
+                print(">>movie director failed ---")
             # if director==None:
             #     pass
             # else:
@@ -685,104 +748,71 @@ class Naver_scrapping(webdriver.Chrome):
             #     pass
             # else:
             #     point_table.extend(point)
-            print(url)
-            try:
-                user.input_data(table = "movie",
-                    columns="movie_code, title, original_title, opening_date, \
-                        playing_time, domestic_rate, foreign_rate, cumulative_audience, \
-                        subtitle, content, poster_url, audience_rate, journalist_rate, \
-                        netizen_rate, audience_count, journalist_count, netizen_count", 
-                    data=movie_table)
-            except:
-                pass
-            print(">>movie complete")
-            try:
-                user.input_data(table = "actor",
-                        columns="actor_name, original_actor_name, actor_code", 
-                        data=actor)
-            except:
-                pass
-            print(">>actor complete")
-            try:
-                user.input_data(table = "movie_actor",
-                        columns="movie_code, cast, role, actor_code", 
-                        data=movie_actor)
-            except:
-                pass
-            print(">>movie actor complete")
-            try:
-                user.input_data(table = "director",
-                        columns="director_name, original_director_name, director_code", 
-                        data=director)
-            except:
-                pass
-            print(">>director complete")
-            try:
-                user.input_data(table = "movie_director",
-                        columns="movie_code, director_code", 
-                        data=movie_director)
-            except:
-                pass
-            print(">>movie director complete")
+           
+            
+            
+            
+            
             review, movie_review, review2 = self.get_review_table_info(movie_code)
             print(">>review function complete")
             try:
                 user.input_data(table = "review",
                         columns="review_id, review_date, review_code, review_title, review_content, review_lookup, review_recommend", 
                         data=review)
+                print(">>review complete")
             except:
-                pass
-            print(">>review complete")
+                print(">>review failed ---")
             try:
                 user.input_data(table = "movie_review",
                         columns="movie_code, review_code", 
                         data=movie_review)
+                print(">>movie review complete")
             except:
-                pass
-            print(">>movie review complete")
+                print(">>movie review failed ---")
             try:
                 user.input_data(table = "review2",
                         columns="review_code, review2_id, review2_content, review2_date, review2_good, review2_bad", 
                         data=review2)
+                print(">>review2 complete")
             except:
-                pass
-            print(">>review2 complete")
+                print(">>review2 failed ---")
+            
             try:
                 user.input_data(table = "image",
                         columns="movie_code, image_url", 
                         data=self.get_image_table_info(movie_code, url))
+                print(">>image complete")
             except:
-                pass
-            print(">>image complete")
+                print(">>image failed ---")
             try:
                 user.input_data(table = "video",
                         columns="movie_code, video_title, video_url", 
                         data=self.get_video_table_info(movie_code))
+                print(">>video complete")
             except:
-                pass
-            print(">>video complete")
+                print(">>video failed ---")
             try:
                 user.input_data(table = "jenre",
                         columns="movie_code, jenre_name", 
                         data=self.get_jenre_table_info(movie_code))
+                print(">>jenre complete")
             except:
-                pass
-            print(">>jenre complete")
+                print(">>jenre failed ---")
             try:
                 user.input_data(table = "nation",
                         columns="movie_code, country", 
                         data=self.get_nation_table_info(movie_code))
+                print(">>nation complete")
             except:
-                pass
-            print(">>nation complete")
+                print(">>nation failed ---")
             try:
                 user.input_data(table = "point",
                         columns="movie_code, point_content, point_id, \
                             point_date, point_good, point_bad, point_star", 
                         data=self.get_point_table_info(movie_code))
+                print(">>point complete")
             except:
-                pass
-            print(">>point complete")
+                print(">>point failed ---")
             
         # return movie_table, actor_table, movie_actor_table, director_table, movie_director_table, review_table, \
         #     movie_review_table, review2_table, image_table, video_table, jenre_table, nation_table, point_table
@@ -806,9 +836,9 @@ if __name__ == '__main__':
     # print(rw2)
 
 
-    crawler = Naver_scrapping()
+    # crawler = Naver_scrapping()
     hyojin = SQL(db="naver", user="hyojin", password="gywls")
-    crawler.land_page()
+    # crawler.land_page()
     # crawler.land_page("https://movie.naver.com/movie/bi/mi/basic.naver?code=201335")
     # crawler.land_page("https://movie.naver.com/movie/bi/mi/review.naver?code=201335")
     # print(crawler.find_element_by_css_selector("#reviewTab > div > div > ul > li:nth-child(2) > span > em:nth-child(2)").text)
@@ -828,7 +858,8 @@ if __name__ == '__main__':
     #                     data=rw2)
 
     # crawler.get_all_of_year(2023, hyojin)
-    crawler.get_all_of_year(2022, hyojin)
+    #349
+    # Naver_scrapping().get_all_of_year(2021, hyojin)
     # review = []
     # movie_review = []
     # review2 = []
@@ -873,3 +904,158 @@ if __name__ == '__main__':
     # print(movie_review)
     # print(review2)
     # print(point)
+    def get_all_of_year_main(year, user):
+        crawler = Naver_scrapping()
+        crawler.land_page()
+
+        crawler.land_directory_of_year(year)
+        movie_urls_of_year = crawler.get_movies_in_the_page()
+        crawler.quit()
+        for url in movie_urls_of_year[504:]:
+            
+            print(url)
+            movie_table = []
+            # actor_table = []
+            # movie_actor_table = []
+            # director_table = []
+            # movie_director_table = []
+            # review_table = []
+            # movie_review_table = []
+            # review2_table = []
+            # image_table = []
+            # video_table = []
+            # jenre_table = []
+            # nation_table = []
+            # point_table = []
+            
+            # self.get(url)
+
+            crawler = Naver_scrapping()
+
+
+            crawler.get(url)
+            crawler.implicitly_wait(const.IMPLICIT_WAIT_TIME)
+
+
+            print(">>land page success")
+            # self.switch_to.window(self.window_handles[-1]);
+
+            movie_code = crawler.get_movie_code(url)
+
+            print(">>movie code complete")
+
+            try:
+                movie_table.append(crawler.get_movie_table_info(movie_code, year))
+                user.input_data(table = "movie",
+                    columns="movie_code, title, original_title, opening_date, \
+                        playing_time, domestic_rate, foreign_rate, cumulative_audience, \
+                        subtitle, content, poster_url, audience_rate, journalist_rate, \
+                        netizen_rate, audience_count, journalist_count, netizen_count", 
+                    data=movie_table)
+                print(">>movie complete")
+            except:
+                print(">>movie failed ---")
+            # #actor & movie_actor
+            try:
+                actor, movie_actor = crawler.get_actor_table_info(movie_code)
+                user.input_data(table = "actor",
+                        columns="actor_name, original_actor_name, actor_code", 
+                        data=actor)
+                print(">>actor complete")
+            except:
+                print(">>actor failed ---")
+            try:
+                user.input_data(table = "movie_actor",
+                        columns="movie_code, cast, role, actor_code", 
+                        data=movie_actor)
+                print(">>movie actor complete")
+            except:
+                print(">>movie actor failed ---")
+            # if actor==None:
+            #     pass
+            # else:
+            #     actor_table.extend(actor)
+            # if movie_actor==None:
+            #     pass
+            # else:
+            #     movie_actor_table.extend(movie_actor)
+            # #director & movie_director
+            try:
+                director, movie_director = crawler.get_director_table_info(movie_code)
+                user.input_data(table = "director",
+                        columns="director_name, original_director_name, director_code", 
+                        data=director)
+                print(">>director complete")
+            except:
+                print(">>director failed ---")
+            try:
+                user.input_data(table = "movie_director",
+                        columns="movie_code, director_code", 
+                        data=movie_director)
+                print(">>movie director complete")
+            except:
+                print(">>movie director failed ---")
+            
+            try:
+                user.input_data(table = "image",
+                        columns="movie_code, image_url", 
+                        data=crawler.get_image_table_info(movie_code, url))
+                print(">>image complete")
+            except:
+                print(">>image failed ---")
+            try:
+                user.input_data(table = "video",
+                        columns="movie_code, video_title, video_url", 
+                        data=crawler.get_video_table_info(movie_code))
+                print(">>video complete")
+            except:
+                print(">>video failed ---")
+            try:
+                user.input_data(table = "jenre",
+                        columns="movie_code, jenre_name", 
+                        data=crawler.get_jenre_table_info(movie_code))
+                print(">>jenre complete")
+            except:
+                print(">>jenre failed ---")
+            try:
+                user.input_data(table = "nation",
+                        columns="movie_code, country", 
+                        data=crawler.get_nation_table_info(movie_code))
+                print(">>nation complete")
+            except:
+                print(">>nation failed ---")
+            try:
+                user.input_data(table = "point",
+                        columns="movie_code, point_content, point_id, \
+                            point_date, point_good, point_bad, point_star", 
+                        data=crawler.get_point_table_info(movie_code))
+                print(">>point complete")
+            except:
+                print(">>point failed ---")
+
+            review, movie_review, review2 = crawler.get_review_table_info(movie_code)
+            print(">>review function complete")
+            try:
+                user.input_data(table = "review",
+                        columns="review_id, review_date, review_code, review_title, review_content, review_lookup, review_recommend", 
+                        data=review)
+                print(">>review complete")
+            except:
+                print(">>review failed ---")
+            try:
+                user.input_data(table = "movie_review",
+                        columns="movie_code, review_code", 
+                        data=movie_review)
+                print(">>movie review complete")
+            except:
+                print(">>movie review failed ---")
+            try:
+                user.input_data(table = "review2",
+                        columns="review_code, review2_id, review2_content, review2_date, review2_good, review2_bad", 
+                        data=review2)
+                print(">>review2 complete")
+            except:
+                print(">>review2 failed ---")
+            crawler.quit()
+    
+    get_all_of_year_main(2020, hyojin)
