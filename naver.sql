@@ -122,24 +122,20 @@ create table review2(
     review2_bad integer
 );
 
+create index movie_title on Movie(title);
+create index opening_date on Movie(opening_date);
+create index movie_audience_rate on Movie(audience_rate);
+create index movie_journalist_rate on Movie(journalist_rate);
+create index movie_netizen_rate on Movie(netizen_rate);
+create index movie_original_title on Movie(original_title);
+create index movie_subtitile on Movie(subtitle);
 
 
+create index actor_actor_name on Actor(actor_name);
+create index director_director_name on Director(director_name);
 
-
-
--- insert into movie(movie_code, title, original_title)
--- values(999999,'비긴 어게인', 'begin again');
--- insert into movie(movie_code, title, original_title, content)
--- values(999988,'라라랜드', 'lala land', '라라랜드는 아주 재미있는 영화입니다.');
-
-
-alter table movie add cumulative_audience integer;
-alter table point drop primary key;
-
-set sql_safe_updates=0;
-
+select * from review2;
 select * from review;
-select * from actor where actor_name='마동석';
 select * from actor;
 select * from director;
 select * from video;
@@ -147,4 +143,4 @@ select * from image;
 select * from jenre;
 select * from nation;
 select * from movie;
--- update review set review_date ='2021-08-12' where review_code=478937;  
+

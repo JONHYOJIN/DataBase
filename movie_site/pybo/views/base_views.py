@@ -53,7 +53,6 @@ def index(request):
     paginator = Paginator(movie_list, 20)  # 페이지당 20개씩 보여주기
     page_obj = paginator.get_page(page)
     context = {'movie_list': page_obj, 'page':page, 'kw':kw, 'so':so, 'akw':akw, 'dkw':dkw}
-    # context = {'movie_list': page_obj}
     return render(request, 'pybo/movie_list.html', context)
 def detail(request, movie_code):
     movie = Movie.objects.get(movie_code=movie_code)
